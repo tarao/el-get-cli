@@ -12,6 +12,8 @@ help() {
     cat <<EOF
 Usage: $base OPTIONS install [PACKAGES ...]
        $base OPTIONS update [PACKAGES ...]
+       $base OPTIONS lock [PACKAGES ...]
+       $base OPTIONS unlock [PACKAGES ...]
        $base OPTIONS checkout [PACKAGES ...]
 
 Command:
@@ -32,15 +34,15 @@ Command:
   (https://github.com/tarao/el-get-lock) to be installed and
   initialized in your Emacs init file.
 
-  checkout   Checkout the locked versions of specified packages.
-             Without packages, it checks out all the installed
-             packages.
-
   lock       Lock specified packages.  Without packages, it resets the
              lock status to lock the all installed packages.
 
   unlock     Unlock specified packages.  Without packages, it resets
              the lock status to unlock the all installed packages.
+
+  checkout   Checkout the locked versions of specified packages.
+             Without packages, it checks out all the installed
+             packages.
 
 Options:
   -f <file>  Specify an Emacs init file.
