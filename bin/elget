@@ -1,0 +1,86 @@
+#!/bin/sh
+
+base="$(basename "$0")"
+lib="$(cd $(dirname "$0")/..; pwd)/lib"
+
+fatal() {
+    echo "$@" >&2
+    exit 1
+}
+
+help() {
+    cat <<EOF
+Usage: $base OPTIONS install [PACKAGES ...]
+       $base OPTIONS update [PACKAGES ...]
+       $base OPTIONS checkout [PACKAGES ...]
+
+Command:
+
+  To use the following commands, you need \`el-get'
+  (https://github.com/dimitri/el-get) to be installed and initialized
+  in your Emacs init file.
+
+  install    Install specified packages.  Without packages, it runs an
+             ordinary install sequence according to instructions in
+             your Emacs init file.
+
+  update     Update specified packages to the latest versions of their
+             remote source.  Without packages, it updates all the
+             installed packages.
+
+  To use the following commands, you need \`el-get-lock'
+  (https://github.com/tarao/el-get-lock) to be installed and
+  initialized in your Emacs init file.
+
+  checkout   Checkout the locked versions of specified packages.
+             Without packages, it checks out all the installed
+             packages.
+
+  lock       Lock specified packages.  Without packages, it resets the
+             lock status to lock the all installed packages.
+
+  unlock     Unlock specified packages.  Without packages, it resets
+             the lock status to unlock the all installed packages.
+
+Options:
+  -f <file>  Specify an Emacs init file.
+
+Environment variables:
+
+  EMACS      Specify the location of Emacs binary.
+
+EOF
+  exit $1
+}
+
+emacs="${EMACS:-emacs}"
+file="$HOME/.emacs.d/init.el"
+cli="$lib/el-get-cli.el"
+
+parsing=1
+while [ $parsing = 1 ] && [ -n "$1" ]; do
+    case "$1" in
+    -h|--help)
+        help
+        ;;
+    -f)
+        shift; file="$1"; shift
+        ;;
+    install|update|checkout|lock|unlock)
+        command="$1"; shift
+        parsing=break
+        ;;
+    *)
+        parsing=break
+        ;;
+    esac
+done
+
+[ -z "$command" ] && help 1
+[ -r "$file" ] || fatal "Cannot read '$file'"
+
+EL_GET_CLI_INIT_FILE="$file";  export EL_GET_CLI_INIT_FILE
+EL_GET_CLI_COMMAND="$command"; export EL_GET_CLI_COMMAND
+EL_GET_CLI_PACKAGES="$@";      export EL_GET_CLI_PACKAGES
+
+"$emacs" --batch -q -l "$cli" -f el-get-cli-run-from-env
