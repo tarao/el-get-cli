@@ -59,8 +59,7 @@ emacs="${EMACS:-emacs}"
 file="$HOME/.emacs.d/init.el"
 cli="$lib/el-get-cli.el"
 
-parsing=1
-while [ $parsing = 1 ] && [ -n "$1" ]; do
+while [ -n "$1" ]; do
     case "$1" in
     -h|--help)
         help
@@ -70,10 +69,10 @@ while [ $parsing = 1 ] && [ -n "$1" ]; do
         ;;
     install|update|checkout|lock|unlock)
         command="$1"; shift
-        parsing=break
+        break
         ;;
     *)
-        parsing=break
+        break
         ;;
     esac
 done
